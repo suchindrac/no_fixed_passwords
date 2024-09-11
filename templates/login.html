@@ -1,0 +1,15 @@
+<html> 
+  <head> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script> 
+    <script src="https://malsup.github.io/jquery.form.js"></script> 
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/main.css') }}">
+
+  </head>
+  <body>
+    <form class="grid-container" id="myForm" action="/login" method="post">
+      Random Text: <textarea name="random_text" rows="50">{{random_text}}</textarea><br/>
+      Username: <input type="text" name="username" /><br/>
+      Password: <textarea name="password" type="password"></textarea><br/> 
+      <input class="input-container" type="submit" value="Login" text-align="right"/> 
+    </form>
+</html>

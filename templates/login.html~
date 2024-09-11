@@ -1,0 +1,21 @@
+<html> 
+  <head> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script> 
+    <script src="https://malsup.github.io/jquery.form.js"></script> 
+    <link rel="stylesheet" href="./main.css"/>
+    <script> 
+        $(document).ready(function() { 
+            $('#myForm').ajaxForm(function() { 
+                alert("Thank you for your comment!"); 
+            }); 
+        }); 
+    </script> 
+  </head>
+  <body>
+    <form class="grid-container" id="myForm" action="comment.php" method="post">
+      Random Text: <textarea name="random_text" rows="10"></textarea><br/>
+      Username: <input type="text" name="name" /><br/>
+      Password: <textarea name="pwd" type="password"></textarea><br/> 
+      <input class="input-container" type="submit" value="Login" text-align="right"/> 
+    </form>
+</html>

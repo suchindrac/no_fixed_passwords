@@ -1,0 +1,6 @@
+body {
+    .input-container { float: right; }
+    .grid-container { display: grid; }
+    .multi-grid-container { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .index-box { margin-right: 10px; resize: none}
+}

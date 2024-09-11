@@ -1,0 +1,4 @@
+body {
+    .input-container { float: right; }
+    .grid-container { display: grid; }
+}
