@@ -22,12 +22,15 @@ def set_password():
                 "index5": index5
               }
 
-    with open("passwords.json") as fd:
-        try:
-            prev_details = json.load(fd)
-        except json.decoder.JSONDecodeError:
-            prev_details = []
-
+    try:
+        with open("indices.json") as fd:
+            try:
+                prev_details = json.load(fd)
+            except json.decoder.JSONDecodeError:
+                prev_details = []
+    except FileNotFoundError:
+        prev_details = []
+            
     if len(prev_details) != 0:
         set_value = False
         for i in range(len(prev_details)):
@@ -39,7 +42,8 @@ def set_password():
             prev_details.append(details)
     else:
         prev_details.append(details)
-    with open("passwords.json", "w") as fd:
+        
+    with open("indices.json", "w+") as fd:
         json.dump(prev_details, fd)
     
     return "True"
@@ -47,98 +51,52 @@ def set_password():
     
 @app.route("/show_login", methods=["GET"])
 def show_login_page():
-    rand_string_show = ""
-    for i in range(50):
-        temp = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=10))
-        rand_string_show += f"\n{temp}"
+    rand_string_shown = ""
+    for i in range(25):
+        temp = ''.join(random.choices(string.ascii_uppercase + \
+                                      string.ascii_lowercase + \
+                                      string.digits, k=10))
+        rand_string_shown += f"\n{temp}"
 
-    rand_string = rand_string_show.replace("\n", "")
-    
-    with open("rand_strings.json") as fd:
-        try:
-            prev_details = json.load(fd)
-        except json.decoder.JSONDecodeError:
-            prev_details = []
-
-        set_value = False
-        if len(prev_details) != 0:
-            for i in range(len(prev_details)):
-                if prev_details[i]["username"] == "NEW":
-                    details = {
-                                "username": "NEW",
-                                "rand_string": rand_string
-                              }
-                    prev_details[i] = details
-                    set_value = True
-                    break
-
-            if not set_value:
-                details = {
-                            "username": "NEW",
-                            "rand_string": rand_string
-                          }
-                prev_details.append(details)
-        else:
-            details = {
-                        "username": "NEW",
-                        "rand_string": rand_string
-                      }
-            prev_details.append(details)
+    rand_string = rand_string_shown.replace("\n", "")
+        
+    details = {
+        "username": "NEW",
+        "rand_string": rand_string
+    }
             
-    with open("rand_strings.json", "w") as fd:
-        json.dump(prev_details, fd)
+    with open("rand_strings.json", "w+") as fd:
+        json.dump(details, fd)
 
-    return render_template("login.html", random_text=rand_string_show)
+    return render_template("login.html", random_text=rand_string_shown)
 
 @app.route("/login", methods=["POST"])
 def login():
     username = request.form.getlist("username")[0]
     password = request.form.getlist("password")[0]
     rand_string_shown = request.form.getlist("random_text")
+    rand_string_shown = rand_string_shown[0]
+    rand_string = rand_string_shown.replace("\r\n", "")
     
-    fd_s = open("rand_strings.json", "r")
-    fd_p = open("passwords.json", "r")
-    
-    try:
-        rand_strings = json.load(fd_s)
-    except json.decoder.JSONDecodeError:
-        rand_strings = []
+    fd_p = open("indices.json", "r")
 
+    indices = None
     try:
-        users = json.load(fd_p)
-        users = [x["username"] for x in users]
+        indices = json.load(fd_p)
+        users = [x["username"] for x in indices]
     except json.decoder.JSONDecodeError:
         users = []
 
-    fd_p = open("passwords.json", "r")
-        
-    rand_string_comp = ""
-    
-    for elem in rand_strings:
-        if elem["username"] == "NEW":
-            rand_string_comp = elem["rand_string"]
-            break
-        
-    if rand_string_comp == "":
-        return "Don't have a random string to compare with"
-    
     found_password = ""
     
     if username in users:
-        indices = json.load(fd_p)
         for elem in indices:
             if elem["username"] == username:
                 for i in ("index1", "index2", "index3", "index4", "index5"):
-                    found_password += rand_string_comp[int(elem[i])]
+                    found_password += rand_string[int(elem[i])]
 
     print(found_password, password)
 
-    for i in range(len(rand_strings)):
-        if rand_strings[i]["username"] == "NEW":
-            rand_strings[i]["username"] = username
-            with open("rand_strings.json", "w") as fd:
-                json.dump(rand_strings, fd)
-            
     if found_password == password:
         return "Login successful"
     else:
